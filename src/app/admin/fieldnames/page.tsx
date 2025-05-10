@@ -27,12 +27,17 @@ async function FieldNameEditorWrapper() {
   const stations = await api.stations.getAll();
   const votes = await api.votes.getAll();
 
+  // Helper function to safely serialize data for client components
+  const safeSerialize = <T,>(data: T): T => {
+    return JSON.parse(JSON.stringify(data)) as T;
+  };
+  
   // Prepare data for client component by serializing it
   const serializedData = {
-    regions: JSON.parse(JSON.stringify(regions)),
-    candidates: JSON.parse(JSON.stringify(candidates)),
-    stations: JSON.parse(JSON.stringify(stations)),
-    votes: JSON.parse(JSON.stringify(votes))
+    regions: safeSerialize(regions),
+    candidates: safeSerialize(candidates),
+    stations: safeSerialize(stations),
+    votes: safeSerialize(votes)
   };
 
   return (

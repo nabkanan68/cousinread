@@ -3,9 +3,16 @@
 import { useState } from "react";
 import { api } from "~/trpc/react";
 
+// Define a type for database records to avoid using 'any'
+interface DbRecord {
+  id: number;
+  name?: string;
+  [key: string]: unknown;
+}
+
 interface FieldNameEditorProps {
   title: string;
-  items: any[];
+  items: DbRecord[];
   tableName: "regions" | "candidates" | "stations" | "votes";
   excludeColumns?: string[];
   editableColumns?: string[];
@@ -35,18 +42,21 @@ export default function FieldNameEditor({
 
   // Get column names from the first item
   const firstItem = items[0];
-  const columns = Object.keys(firstItem).filter(
+  // Ensure firstItem is defined before calling Object.keys
+  const columns = firstItem ? Object.keys(firstItem).filter(
     (col) => !excludeColumns.includes(col)
-  );
+  ) : [];
 
-  const handleEdit = (item: any, columnName: string) => {
+  const handleEdit = (item: DbRecord, columnName: string) => {
     if (!editableColumns.includes(columnName)) return;
     
     setEditingItem(item.id);
-    setEditValue(item[columnName]);
+    // Convert the value to a string to ensure type safety
+    const valueToEdit = item[columnName];
+    setEditValue(typeof valueToEdit === 'string' ? valueToEdit : String(valueToEdit));
   };
 
-  const handleSave = (item: any, columnName: string) => {
+  const handleSave = (item: DbRecord, columnName: string) => {
     updateFieldName.mutate({
       tableName,
       id: item.id,
@@ -62,28 +72,44 @@ export default function FieldNameEditor({
   };
 
   // Helper function to render different types of values
-  const renderValue = (value: any) => {
+  const renderValue = (value: unknown) => {
     if (value === null || value === undefined) {
       return "-";
     }
     
-    if (typeof value === "object") {
+    if (typeof value === "object" && value !== null) {
       // If it's a Date object
       if (value instanceof Date) {
         return value.toLocaleString();
       }
       
-      // If it's a relation or complex object, display a placeholder or relevant property
-      if (value.name) {
-        return value.name;
+      // If it's a relation or complex object with a name property
+      // Use type assertion to access potential properties safely
+      const objectValue = value as Record<string, unknown>;
+      if (objectValue.name && typeof objectValue.name === 'string') {
+        return objectValue.name;
       }
       
       // For other objects, show a simplified representation
-      return JSON.stringify(value);
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch {
+        // Catch without params avoids the unused variable warning
+        return '[Complex Object]';
+      }
     }
     
     // For simple values (strings, numbers, booleans)
-    return String(value);
+    if (value === null || value === undefined) {
+      return '';
+    }
+    
+    if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string') {
+      return String(value);
+    }
+    
+    // For any other types, provide a safe fallback
+    return '[Unknown Value]';
   };
 
   return (

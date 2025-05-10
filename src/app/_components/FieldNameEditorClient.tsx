@@ -3,12 +3,49 @@
 import { useState } from "react";
 import FieldNameEditor from "./FieldNameEditor";
 
+// Define proper types for the data structures
+type Region = {
+  id: number;
+  name: string;
+  total_stations: number;
+  total_representatives: number;
+  created_at?: string | Date;
+};
+
+type Candidate = {
+  id: number;
+  name: string;
+  region_id: number;
+  number: number;
+  created_at?: string | Date;
+  region?: Region;
+};
+
+type Station = {
+  id: number;
+  name: string;
+  region_id: number;
+  created_at?: string | Date;
+  region?: Region;
+};
+
+type Vote = {
+  id: number;
+  candidate_id: number;
+  station_id: number;
+  vote_count: number;
+  created_at?: string | Date | null;
+  updated_at?: string | Date | null;
+  candidate?: Candidate | null;
+  station?: Station | null;
+};
+
 interface FieldNameEditorClientProps {
   data: {
-    regions: any[];
-    candidates: any[];
-    stations: any[];
-    votes: any[];
+    regions: Region[];
+    candidates: Candidate[];
+    stations: Station[];
+    votes: Vote[];
   };
 }
 
