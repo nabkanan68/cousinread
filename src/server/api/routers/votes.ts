@@ -5,6 +5,17 @@ import { votes, candidates, stations } from "~/server/db/schema";
 import { eq, and } from "drizzle-orm";
 
 export const votesRouter = createTRPCRouter({
+  // Get all votes
+  getAll: publicProcedure.query(async () => {
+    return db.query.votes.findMany({
+      orderBy: (votes, { asc }) => [asc(votes.id)],
+      with: {
+        candidate: true,
+        station: true,
+      },
+      limit: 100, // Limit to prevent too much data
+    });
+  }),
   // Get votes for a specific station and candidate
   getVote: publicProcedure
     .input(z.object({ stationId: z.number(), candidateId: z.number() }))

@@ -12,6 +12,11 @@ export default async function AdminPage() {
         <p className="text-gray-600">
           Enter vote counts for each candidate by region and polling station.
         </p>
+        <div className="mt-4">
+          <a href="/admin/fieldnames" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            Edit Field Names
+          </a>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8">

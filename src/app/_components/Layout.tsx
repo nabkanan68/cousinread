@@ -28,6 +28,12 @@ export default function Layout({ children }: LayoutProps) {
             >
               Admin
             </Link>
+            <Link 
+              href="/admin/fieldnames" 
+              className="hover:underline font-medium"
+            >
+              Field Names
+            </Link>
           </nav>
         </div>
       </header>
