@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
       <header className="bg-blue-700 text-white shadow-md">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold">
-            Election Results
+            Election Results (non-official) ผลการเลือกตั้งไม่เป็นทางการ
           </Link>
           <nav className="flex gap-6">
             <Link 
@@ -23,17 +23,19 @@ export default function Layout({ children }: LayoutProps) {
               Results
             </Link>
             <Link 
-              href="/admin" 
-              className="hover:underline font-medium"
+              href="/auto" 
+              className="hover:underline font-medium flex items-center"
             >
-              Admin
+              <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+              Auto-refresh
             </Link>
             <Link 
-              href="/admin/fieldnames" 
+              href="/stations" 
               className="hover:underline font-medium"
             >
-              Field Names
+              Station Details
             </Link>
+            {/* Admin links removed - app is now read-only */}
           </nav>
         </div>
       </header>

@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { db } from "~/server/db";
 import { candidates, votes } from "~/server/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { dataCache } from "~/server/cache";
 
 export const candidatesRouter = createTRPCRouter({
   // Get all candidates
@@ -32,20 +33,9 @@ export const candidatesRouter = createTRPCRouter({
   getResultsByRegion: publicProcedure
     .input(z.object({ regionId: z.number() }))
     .query(async ({ input }) => {
-      // Get all candidates with their total votes across all stations
-      const results = await db
-        .select({
-          candidateId: candidates.id,
-          candidateName: candidates.name,
-          candidateNumber: candidates.number,
-          total_votes: sql`COALESCE(SUM(${votes.vote_count}), 0)`.as("total_votes"),
-        })
-        .from(candidates)
-        .leftJoin(votes, eq(candidates.id, votes.candidate_id))
-        .where(eq(candidates.region_id, input.regionId))
-        .groupBy(candidates.id, candidates.name, candidates.number)
-        .orderBy((cols) => [sql`${cols.total_votes} DESC`]);
-
-      return results;
+      // Import the getElectionResultsByRegion function from our data-cache module
+      const { getElectionResultsByRegion } = await import('~/server/data-cache');
+      // Use our cached data function that refreshes every minute
+      return getElectionResultsByRegion(input.regionId);
     }),
 });

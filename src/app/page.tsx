@@ -1,17 +1,18 @@
 import Layout from "~/app/_components/Layout";
 import RegionResults from "~/app/_components/RegionResults";
-import { api } from "~/trpc/server";
+import { getAllRegions } from "~/server/data-cache";
+export const revalidate = 60; // Revalidate this page every 60 seconds (1 minute)
 
 export default async function Home() {
-  // Use the correct API method for the server component
-  const regions = await api.regions.getAll();
+  // Use our cached data function instead of direct API call
+  const regions = await getAllRegions();
 
   return (
     <Layout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Election Results</h1>
+        <h1 className="text-3xl font-bold mb-2">Election Results (non-official) ผลการเลือกตั้งไม่เป็นทางการ </h1>
         <p className="text-gray-600">
-          View the latest election results by region. Top 6 candidates by votes in each region will be elected as representatives.
+          View the latest Election Results (non-official) ผลการเลือกตั้งไม่เป็นทางการ by region. Top 6 candidates by votes in each region will be elected as representatives.
         </p>
       </div>
 

@@ -10,8 +10,8 @@ interface RegionResultsProps {
 export default function RegionResults({ regionId }: RegionResultsProps) {
   const { data: region } = api.regions.getById.useQuery({ id: regionId });
   const { data: results, isLoading } = api.candidates.getResultsByRegion.useQuery(
-    { regionId },
-    { refetchInterval: 30000 } // Refetch every 30 seconds
+    { regionId }
+    // Server-side caching handles data refresh, no need for client-side refetching
   );
 
   if (isLoading) {
